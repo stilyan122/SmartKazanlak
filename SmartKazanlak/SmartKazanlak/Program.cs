@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using SmartKazanlak.Core.Contract;
+using SmartKazanlak.Core.Domain.Entities;
 using SmartKazanlak.Infrastructure;
-using SmartKazanlak.Infrastructure.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,10 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IApplicationDbContext>(sp =>
+    sp.GetRequiredService<ApplicationDbContext>());
+builder.Services.AddScoped<IEventRequestService, EventRequestService>();
 
 var app = builder.Build();
 

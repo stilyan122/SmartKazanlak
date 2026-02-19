@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace SmartKazanlak.Infrastructure.Entities
+namespace SmartKazanlak.Core.Domain.Entities
 {
     public class ApplicationUser : IdentityUser
     {
