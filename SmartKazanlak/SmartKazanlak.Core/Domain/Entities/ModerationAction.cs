@@ -1,4 +1,4 @@
-﻿namespace SmartKazanlak.Infrastructure.Entities
+﻿namespace SmartKazanlak.Core.Domain.Entities
 {
     public class ModerationAction
     {

@@ -1,6 +1,6 @@
 ﻿using SmartKazanlak.Core.Enums;
 
-namespace SmartKazanlak.Infrastructure.Entities
+namespace SmartKazanlak.Core.Domain.Entities
 {
     public class EventRequest
     {
