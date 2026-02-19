@@ -1,0 +1,42 @@
+﻿@using SmartKazanlak.Core.Models.EventRequest
+@model IReadOnlyList<EventRequestListDto>
+
+<h2>Rejected Requests</h2>
+
+<p>
+    <a asp-area="Admin" asp-controller="EventRequests" asp-action="Pending">Pending</a> |
+    <a asp-area="Admin" asp-controller="EventRequests" asp-action="Approved">Approved</a>
+</p>
+
+@if (!Model.Any())
+{
+    <p>No rejected requests.</p>
+}
+else
+{
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Date/Time</th>
+                <th>Location</th>
+                <th>Organizer</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in Model)
+            {
+                <tr>
+                    <td>@x.Title</td>
+                    <td>@x.StartDateTime</td>
+                    <td>@x.Location</td>
+                    <td>@x.OrganizerName</td>
+                    <td>
+                        <a asp-area="Admin" asp-controller="EventRequests" asp-action="Details" asp-route-id="@x.Id">View</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,43 @@
+﻿@using SmartKazanlak.Core.Models.EventRequest
+@model IReadOnlyList<EventRequestListDto>
+
+<h2>My Requests</h2>
+
+<p>
+    <a asp-controller="EventRequests" asp-action="Create">+ Create new request</a>
+</p>
+
+@if (!Model.Any())
+{
+    <p>No requests yet.</p>
+}
+else
+{
+    <table border="1" cellpadding="6" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Date/Time</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Organizer Name</th>
+                <th>Admin Note</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in Model)
+            {
+                <tr>
+                    <td>@x.Title</td>
+                    <td>@x.StartDateTime</td>
+                    <td>@x.Location</td>
+                    <td>@x.Status</td>
+                    <td>@x.CreatedAt</td>
+                    <td>@x.OrganizerName</td>
+                    <td>@(string.IsNullOrWhiteSpace(x.AdminNote) ? "-" : x.AdminNote)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

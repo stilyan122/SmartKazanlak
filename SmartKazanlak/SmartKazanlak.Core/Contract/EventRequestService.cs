@@ -2,6 +2,7 @@
 using SmartKazanlak.Core.Domain.Entities;
 using SmartKazanlak.Core.Enums;
 using SmartKazanlak.Core.Models.EventRequest;
+using SmartKazanlak.Models.EventRequest;
 
 namespace SmartKazanlak.Core.Contract
 {
@@ -14,7 +15,7 @@ namespace SmartKazanlak.Core.Contract
             this.db = db;
         }
 
-        public async Task<Guid> CreateAsync(CreateEventRequestDto dto, string userId, string userEmail)
+        public async Task<Guid> CreateAsync(CreateEventRequestDto dto, string userId, string userEmail, string organizer)
         {
             if (dto is null) throw new ArgumentNullException(nameof(dto));
             if (string.IsNullOrWhiteSpace(userId)) throw new ArgumentException("userId is required.", nameof(userId));
@@ -29,7 +30,7 @@ namespace SmartKazanlak.Core.Contract
                 StartDateTime = dto.StartDateTime,
                 Location = dto.Location.Trim(),
                 Description = dto.Description.Trim(),
-                OrganizerName = dto.OrganizerName.Trim(),
+                OrganizerName = organizer,
                 OrganizerEmail = userEmail.Trim(),
                 Phone = dto.Phone.Trim(),
 
@@ -61,7 +62,9 @@ namespace SmartKazanlak.Core.Contract
                     StartDateTime = x.StartDateTime,
                     Location = x.Location,
                     Status = x.Status.ToString(),
-                    CreatedAt = x.CreatedAt
+                    CreatedAt = x.CreatedAt,
+                    AdminNote = x.AdminNote,
+                    OrganizerName = x.User.FullName ?? "-"
                 })
                 .ToListAsync();
         }
@@ -156,10 +159,32 @@ namespace SmartKazanlak.Core.Contract
             await db.SaveChangesAsync();
         }
 
+        public async Task<EventRequestDetailsDto?> GetDetailsAsync(Guid id)
+        {
+            return await db.EventRequests
+                .AsNoTracking()
+                .Where(x => x.Id == id)
+                .Select(x => new EventRequestDetailsDto
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    StartDateTime = x.StartDateTime,
+                    Location = x.Location,
+                    Description = x.Description,
+                    OrganizerName = x.OrganizerName,
+                    OrganizerEmail = x.OrganizerEmail,
+                    Phone = x.Phone,
+                    Status = x.Status.ToString(),
+                    CreatedAt = x.CreatedAt
+                })
+                .FirstOrDefaultAsync();
+        }
+
         private async Task<IReadOnlyList<EventRequestListDto>> GetByStatusAsync(EventStatus status)
         {
             return await db.EventRequests
                 .AsNoTracking()
+                .Include(e => e.User)
                 .Where(x => x.Status == status)
                 .OrderByDescending(x => x.CreatedAt)
                 .Select(x => new EventRequestListDto
@@ -169,7 +194,8 @@ namespace SmartKazanlak.Core.Contract
                     StartDateTime = x.StartDateTime,
                     Location = x.Location,
                     Status = x.Status.ToString(),
-                    CreatedAt = x.CreatedAt
+                    CreatedAt = x.CreatedAt,
+                    OrganizerName = x.User.FullName ?? "-"
                 })
                 .ToListAsync();
         }

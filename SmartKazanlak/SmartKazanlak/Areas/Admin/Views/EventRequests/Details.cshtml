@@ -1,0 +1,49 @@
+﻿@using SmartKazanlak.Models.EventRequest
+@model EventRequestDetailsDto
+
+<h2>Request Details</h2>
+
+<div style="border:1px solid #ccc; padding:12px;">
+    <p><strong>Title:</strong> @Model.Title</p>
+    <p><strong>Date/Time:</strong> @Model.StartDateTime</p>
+    <p><strong>Location:</strong> @Model.Location</p>
+    <p><strong>Description:</strong><br />@Model.Description</p>
+
+    <hr />
+
+    <p><strong>Organizer:</strong> @Model.OrganizerName</p>
+    <p><strong>Email:</strong> @Model.OrganizerEmail</p>
+    <p><strong>Phone:</strong> @Model.Phone</p>
+
+    <hr />
+
+    <p><strong>Status:</strong> @Model.Status</p>
+    <p><strong>Created:</strong> @Model.CreatedAt</p>
+</div>
+
+@if (Model.Status == "Pending")
+{
+    <h3 style="margin-top:16px;">Actions</h3>
+
+    <form asp-area="Admin" asp-controller="EventRequests" asp-action="Approve" method="post" style="margin-bottom:10px;">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+        <label>Note (optional)</label><br />
+        <input type="text" name="note" />
+        <br /><br />
+        <button type="submit">Approve</button>
+    </form>
+
+    <form asp-area="Admin" asp-controller="EventRequests" asp-action="Reject" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+        <label>Rejection reason</label><br />
+        <input type="text" name="note" required />
+        <br /><br />
+        <button type="submit">Reject</button>
+    </form>
+}
+
+<p style="margin-top:16px;">
+    <a asp-area="Admin" asp-controller="EventRequests" asp-action="Pending">← Back to Pending</a>
+</p>
