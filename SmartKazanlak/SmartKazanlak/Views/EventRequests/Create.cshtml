@@ -1,0 +1,45 @@
+﻿@using SmartKazanlak.Models.EventRequest
+@model CreateEventRequestInputModel
+
+<h2>Create Event Request</h2>
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+
+    <div>
+        <label asp-for="Title"></label><br />
+        <input asp-for="Title" />
+        <span asp-validation-for="Title" style="color:red"></span>
+    </div>
+
+    <div>
+        <label asp-for="StartDateTime"></label><br />
+        <input asp-for="StartDateTime" type="datetime-local" />
+        <span asp-validation-for="StartDateTime" style="color:red"></span>
+    </div>
+
+    <div>
+        <label asp-for="Location"></label><br />
+        <input asp-for="Location" />
+        <span asp-validation-for="Location" style="color:red"></span>
+    </div>
+
+    <div>
+        <label asp-for="Description"></label><br />
+        <textarea asp-for="Description" rows="6"></textarea>
+        <span asp-validation-for="Description" style="color:red"></span>
+    </div>
+
+    <div>
+        <label asp-for="Phone"></label><br />
+        <input asp-for="Phone" />
+        <span asp-validation-for="Phone" style="color:red"></span>
+    </div>
+
+    <br />
+    <button type="submit">Submit</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

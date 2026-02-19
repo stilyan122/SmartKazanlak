@@ -6,7 +6,6 @@
         public DateTime StartDateTime { get; set; }
         public string Location { get; set; } = null!;
         public string Description { get; set; } = null!;
-        public string OrganizerName { get; set; } = null!;
         public string Phone { get; set; } = null!;
     }
 }
