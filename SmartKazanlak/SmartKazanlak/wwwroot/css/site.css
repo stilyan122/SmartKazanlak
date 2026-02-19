@@ -1,22 +1,124 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+}
+
+.container{
+    width: 100%;
+    margin: 1px, 1px, 1px, 1px;
+}
+
+#navbar {
+    background: linear-gradient(135deg, #0b1346, #131b63);
+    border-bottom: 1px solid rgba(255,255,255,.10) !important;
+    box-shadow: 0 16px 40px rgba(0,0,0,.18);
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+    #navbar .navbar-brand {
+        color: #ffffff !important;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        font-size: 20px;
+    }
+
+    /* nicer toggler on dark bg */
+    #navbar .navbar-toggler {
+        border: 1px solid rgba(255,255,255,.18);
+        border-radius: 14px;
+        padding: 10px 12px;
+        background: rgba(255,255,255,.06);
+    }
+
+        #navbar .navbar-toggler:focus {
+            box-shadow: 0 0 0 4px rgba(252,210,81,.20);
+        }
+
+    /* nav container spacing */
+    #navbar .navbar-nav {
+        gap: 10px;
+    }
+
+    /* links as pills */
+    #navbar .nav-link.nav-btn {
+        color: rgba(255,255,255,.92) !important;
+        font-weight: 900;
+        font-size: 15px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.06);
+        border: 1px solid rgba(255,255,255,.12);
+        transition: transform .06s ease, background .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+
+        #navbar .nav-link.nav-btn:hover {
+            background: rgba(255,255,255,.10);
+            border-color: rgba(252,210,81,.45);
+            box-shadow: 0 0 0 4px rgba(252,210,81,.18);
+        }
+
+    /* active (Bootstrap uses .active sometimes, keep both) */
+    #navbar .nav-link.active,
+    #navbar .nav-link[aria-current="page"] {
+        background: rgba(252,210,81,.92);
+        border-color: rgba(252,210,81,.92);
+        color: #0b1b34 !important;
+        box-shadow: 0 12px 26px rgba(252,210,81,.18);
+    }
+
+    /* ===== Identity (_LoginPartial) styling inside navbar ===== */
+    /* Login/Register links */
+    #navbar .navbar-collapse a.nav-link {
+        color: rgba(255,255,255,.92) !important;
+        font-weight: 900;
+        padding: 10px 14px;
+        border-radius: 999px;
+        transition: transform .06s ease, background .15s ease, box-shadow .15s ease;
+    }
+
+        #navbar .navbar-collapse a.nav-link:hover {
+            background: rgba(255,255,255,.10);
+            box-shadow: 0 0 0 4px rgba(13,110,253,.14);
+        }
+
+    /* Logout button (Identity often renders it as button.nav-link.btn.btn-link) */
+    #navbar button.nav-link.btn.btn-link {
+        color: rgba(255,255,255,.92) !important;
+        font-weight: 900;
+        text-decoration: none;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.06);
+        border: 1px solid rgba(255,255,255,.12);
+        transition: transform .06s ease, background .15s ease, box-shadow .15s ease, border-color .15s ease;
+    }
+
+.login-btn {
+    color: #1f227d;
+}
+
+#navbar button.nav-link.btn.btn-link:hover {
+    background: rgba(252,210,81,.92);
+    border-color: rgba(252,210,81,.92);
+    color: #0b1b34 !important;
+    box-shadow: 0 12px 26px rgba(252,210,81,.18);
 }
