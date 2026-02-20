@@ -1,49 +1,405 @@
 ﻿@using SmartKazanlak.Models.EventRequest
 @model EventRequestDetailsDto
 
-<h2>Request Details</h2>
-
-<div style="border:1px solid #ccc; padding:12px;">
-    <p><strong>Title:</strong> @Model.Title</p>
-    <p><strong>Date/Time:</strong> @Model.StartDateTime</p>
-    <p><strong>Location:</strong> @Model.Location</p>
-    <p><strong>Description:</strong><br />@Model.Description</p>
-
-    <hr />
-
-    <p><strong>Organizer:</strong> @Model.OrganizerName</p>
-    <p><strong>Email:</strong> @Model.OrganizerEmail</p>
-    <p><strong>Phone:</strong> @Model.Phone</p>
-
-    <hr />
-
-    <p><strong>Status:</strong> @Model.Status</p>
-    <p><strong>Created:</strong> @Model.CreatedAt</p>
-</div>
-
-@if (Model.Status == "Pending")
-{
-    <h3 style="margin-top:16px;">Actions</h3>
-
-    <form asp-area="Admin" asp-controller="EventRequests" asp-action="Approve" method="post" style="margin-bottom:10px;">
-        @Html.AntiForgeryToken()
-        <input type="hidden" name="id" value="@Model.Id" />
-        <label>Note (optional)</label><br />
-        <input type="text" name="note" />
-        <br /><br />
-        <button type="submit">Approve</button>
-    </form>
-
-    <form asp-area="Admin" asp-controller="EventRequests" asp-action="Reject" method="post">
-        @Html.AntiForgeryToken()
-        <input type="hidden" name="id" value="@Model.Id" />
-        <label>Rejection reason</label><br />
-        <input type="text" name="note" required />
-        <br /><br />
-        <button type="submit">Reject</button>
-    </form>
+@{
+    ViewData["Title"] = "Детайли за заявка";
 }
 
-<p style="margin-top:16px;">
-    <a asp-area="Admin" asp-controller="EventRequests" asp-action="Pending">← Back to Pending</a>
-</p>
+<style>
+    :root {
+        --blue: #0b5ed7;
+        --yellow: #fcd251;
+        --ink: #0b1b34;
+        --muted: rgba(11,27,52,.72);
+        --border: rgba(0,0,0,.10);
+        --shadow: 0 18px 55px rgba(0,0,0,.10);
+        --radius: 22px;
+        --ok: #198754;
+        --bad: #dc3545;
+        --warn: #ffb300;
+    }
+
+    .pg-wrap {
+        padding: 28px 0 40px;
+    }
+
+    .pg-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
+
+    .pg-title {
+        margin: 0;
+        font-weight: 950;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        font-size: 28px;
+        line-height: 1.15;
+    }
+
+    .pg-sub {
+        margin: 6px 0 0 0;
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    .pg-card {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: #fff;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .pg-top {
+        padding: 18px 18px 16px;
+        border-bottom: 1px solid rgba(0,0,0,.06);
+        background: linear-gradient(135deg, rgba(252,210,81,.18), rgba(13,110,253,.06));
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .pg-name {
+        margin: 0;
+        font-weight: 950;
+        color: var(--ink);
+        letter-spacing: -0.02em;
+        font-size: 18px;
+        line-height: 1.25;
+    }
+
+    .pg-pills {
+        margin-top: 10px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .pg-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(0,0,0,.10);
+        background: rgba(0,0,0,.03);
+        font-weight: 900;
+        font-size: 12px;
+        color: rgba(11,27,52,.78);
+        white-space: nowrap;
+    }
+
+    .pg-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-weight: 950;
+        font-size: 12px;
+        border: 1px solid rgba(0,0,0,.12);
+        background: rgba(0,0,0,.03);
+        color: rgba(11,27,52,.85);
+        white-space: nowrap;
+    }
+
+        /* status colors (keeps your logic: we only style) */
+        .pg-status.pending {
+            border-color: rgba(255,179,0,.30);
+            background: rgba(255,179,0,.12);
+            color: rgba(153,102,0,1);
+        }
+
+        .pg-status.approved {
+            border-color: rgba(25,135,84,.25);
+            background: rgba(25,135,84,.10);
+            color: rgba(25,135,84,1);
+        }
+
+        .pg-status.rejected {
+            border-color: rgba(220,53,69,.25);
+            background: rgba(220,53,69,.08);
+            color: rgba(220,53,69,1);
+        }
+
+    .pg-body {
+        padding: 18px;
+        display: grid;
+        grid-template-columns: 1.25fr .75fr;
+        gap: 14px;
+    }
+
+
+    .pg-section {
+        border: 1px solid rgba(0,0,0,.08);
+        border-radius: 18px;
+        padding: 14px;
+        background: #fff;
+    }
+
+    .pg-secTitle {
+        margin: 0 0 10px 0;
+        font-weight: 950;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        font-size: 14px;
+    }
+
+    .pg-kv {
+        display: grid;
+        gap: 10px;
+    }
+
+    .pg-row {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 10px;
+        align-items: start;
+    }
+
+
+    .pg-key {
+        font-weight: 900;
+        color: rgba(11,27,52,.78);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+    }
+
+    .pg-val {
+        color: var(--ink);
+        font-size: 14px;
+        line-height: 1.5;
+        word-break: break-word;
+    }
+
+    .pg-desc {
+        border: 1px solid rgba(0,0,0,.08);
+        background: rgba(13,110,253,.03);
+        border-radius: 16px;
+        padding: 12px;
+    }
+
+    /* actions */
+    .pg-actionsWrap {
+        margin-top: 14px;
+        display: grid;
+        gap: 12px;
+    }
+
+    .pg-actionTitle {
+        margin: 0;
+        font-weight: 950;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        font-size: 16px;
+    }
+
+    .pg-form {
+        border: 1px solid rgba(0,0,0,.08);
+        border-radius: 18px;
+        padding: 14px;
+        background: #fff;
+        display: grid;
+        gap: 10px;
+    }
+
+    .pg-label {
+        font-weight: 900;
+        font-size: 13px;
+        color: var(--ink);
+    }
+
+    .pg-input {
+        width: 100%;
+        padding: 12px 12px;
+        border-radius: 14px;
+        border: 1px solid rgba(0,0,0,.14);
+        outline: none;
+        font-size: 14px;
+        color: var(--ink);
+        background: #fff;
+        transition: box-shadow .15s ease, border-color .15s ease;
+    }
+
+        .pg-input:focus {
+            border-color: rgba(13,110,253,.55);
+            box-shadow: 0 0 0 4px rgba(13,110,253,.14);
+        }
+
+    .pg-btnRow {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .pg-btn {
+        border-radius: 14px;
+        padding: 11px 14px;
+        font-weight: 950;
+        border: 1px solid transparent;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: transform .06s ease, filter .15s ease, box-shadow .15s ease;
+    }
+
+        .pg-btn:active {
+            transform: translateY(1px);
+        }
+
+    .pg-approve {
+        color: #082042;
+        background: var(--yellow);
+        border: 1px solid rgba(255,193,7,.35);
+        box-shadow: 0 12px 26px rgba(255,193,7,.18);
+    }
+
+        .pg-approve:hover {
+            filter: brightness(1.03);
+        }
+
+    .pg-reject {
+        color: #fff;
+        background: linear-gradient(135deg, #dc3545, #b02a37);
+        border: 1px solid rgba(220,53,69,.35);
+        box-shadow: 0 12px 26px rgba(220,53,69,.16);
+    }
+
+        .pg-reject:hover {
+            filter: brightness(1.03);
+        }
+
+    .pg-back {
+        color: var(--blue);
+        background: rgba(13,110,253,.06);
+        border: 1px solid rgba(13,110,253,.18);
+    }
+
+        .pg-back:hover {
+            box-shadow: 0 0 0 4px rgba(13,110,253,.10);
+        }
+
+    .pg-rightTop {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+</style>
+
+<div class="container pg-wrap">
+    <div class="pg-head">
+        <div>
+            <h1 class="pg-title">Детайли</h1>
+            <p class="pg-sub">Прегледай заявката и (ако е “Pending”) я одобри или отхвърли.</p>
+        </div>
+    </div>
+
+    <div class="pg-card">
+        <div class="pg-top">
+            <div>
+                <h2 class="pg-name">@Model.Title</h2>
+
+                <div class="pg-pills">
+                    <span class="pg-pill">📍 @Model.Location</span>
+                    <span class="pg-pill">🕒 @Model.StartDateTime.ToString("dd.MM.yyyy HH:mm")</span>
+
+                    @{
+                        var statusClass = (Model.Status ?? "").ToLowerInvariant();
+                        var css = statusClass.Contains("pend") ? "pending"
+                        : statusClass.Contains("approv") ? "approved"
+                        : statusClass.Contains("reject") ? "rejected"
+                        : "";
+                    }
+                    <span class="pg-status @css">🏷️ @Model.Status</span>
+
+                    <span class="pg-pill">🗓️ @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</span>
+                </div>
+            </div>
+
+            <div class="pg-rightTop">
+                <a class="pg-btn pg-back" asp-area="Admin" asp-controller="EventRequests" asp-action="Pending">
+                    ← Назад към чакащи
+                </a>
+            </div>
+        </div>
+
+        <div class="pg-body">
+            <!-- LEFT: Event -->
+            <div class="pg-section">
+                <div class="pg-secTitle">Информация за събитието</div>
+
+                <div class="pg-kv">
+                    <div class="pg-row">
+                        <div class="pg-key">Описание</div>
+                        <div class="pg-val">
+                            <div class="pg-desc">@Model.Description</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Organizer -->
+            <div class="pg-section">
+                <div class="pg-secTitle">Организатор</div>
+
+                <div class="pg-kv">
+                    <div class="pg-row">
+                        <div class="pg-key">Име</div>
+                        <div class="pg-val">@Model.OrganizerName</div>
+                    </div>
+
+                    <div class="pg-row">
+                        <div class="pg-key">Имейл</div>
+                        <div class="pg-val">@Model.OrganizerEmail</div>
+                    </div>
+
+                    <div class="pg-row">
+                        <div class="pg-key">Телефон</div>
+                        <div class="pg-val">@Model.Phone</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Status == "Pending")
+    {
+        <div class="pg-actionsWrap">
+            <h3 class="pg-actionTitle">Действия</h3>
+
+            <form asp-area="Admin" asp-controller="EventRequests" asp-action="Approve" method="post" class="pg-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <label class="pg-label">Бележка (по желание)</label>
+                <input class="pg-input" type="text" name="note" placeholder="Напр. 'Ок за публикуване'" />
+                <div class="pg-btnRow">
+                    <button type="submit" class="pg-btn pg-approve">Одобри</button>
+                </div>
+            </form>
+
+            <form asp-area="Admin" asp-controller="EventRequests" asp-action="Reject" method="post" class="pg-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <label class="pg-label">Причина за отказ</label>
+                <input class="pg-input" type="text" name="note" required placeholder="Напр. 'Липсва точен адрес/дата'" />
+                <div class="pg-btnRow">
+                    <button type="submit" class="pg-btn pg-reject">Отхвърли</button>
+                </div>
+            </form>
+        </div>
+    }
+</div>

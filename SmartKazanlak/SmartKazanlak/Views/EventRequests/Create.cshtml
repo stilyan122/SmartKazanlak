@@ -1,44 +1,261 @@
-﻿@using SmartKazanlak.Models.EventRequest
-@model CreateEventRequestInputModel
+﻿@model SmartKazanlak.Models.EventRequest.CreateEventRequestInputModel
+@{
+    ViewData["Title"] = "Подай заявка";
+}
 
-<h2>Create Event Request</h2>
+<style>
+    :root {
+        --blue: #0b5ed7;
+        --yellow: #fcd251;
+        --ink: #0b1b34;
+        --muted: rgba(11,27,52,.72);
+        --border: rgba(0,0,0,.10);
+        --shadow: 0 18px 55px rgba(0,0,0,.10);
+        --radius: 18px;
+    }
 
-<form asp-action="Create" method="post">
-    @Html.AntiForgeryToken()
+    .pg-wrap {
+        padding: 36px 0;
+        background: radial-gradient(1000px 420px at 12% 0%, rgba(252,210,81,.18), transparent 60%), radial-gradient(1000px 420px at 88% 10%, rgba(13,110,253,.12), transparent 55%), #fff;
+    }
 
-    <div>
-        <label asp-for="Title"></label><br />
-        <input asp-for="Title" />
-        <span asp-validation-for="Title" style="color:red"></span>
+    .pg-card {
+        border-radius: 22px;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        background: #fff;
+        overflow: hidden;
+    }
+
+    .pg-top {
+        padding: 26px 26px 18px 26px;
+        border-bottom: 1px solid rgba(0,0,0,.06);
+        background: linear-gradient(135deg, rgba(252,210,81,.22), rgba(13,110,253,.10));
+    }
+
+    .pg-title {
+        margin: 0 0 6px 0;
+        font-size: 26px;
+        font-weight: 950;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+    }
+
+    .pg-sub {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.5;
+        font-size: 14px;
+    }
+
+    .pg-body {
+        padding: 22px 26px 26px 26px;
+    }
+
+    .pg-validation {
+        border: 1px solid rgba(220,53,69,.24);
+        background: rgba(220,53,69,.06);
+        padding: 12px;
+        border-radius: 14px;
+        margin-bottom: 14px;
+    }
+
+    .pg-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    @@media (max-width: 900px) {
+        .pg-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .pg-field {
+        display: grid;
+        gap: 8px;
+    }
+
+    .pg-label {
+        font-weight: 900;
+        font-size: 13px;
+        color: var(--ink);
+        letter-spacing: .01em;
+    }
+
+    .pg-input, .pg-textarea {
+        width: 100%;
+        padding: 13px 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(0,0,0,.14);
+        outline: none;
+        font-size: 15px;
+        color: var(--ink);
+        background: #fff;
+        transition: box-shadow .15s ease, border-color .15s ease;
+    }
+
+    .pg-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+        .pg-input:focus, .pg-textarea:focus {
+            border-color: rgba(13,110,253,.55);
+            box-shadow: 0 0 0 4px rgba(13,110,253,.14);
+        }
+
+    .pg-hint {
+        margin-top: -2px;
+        font-size: 12.5px;
+        color: rgba(11,27,52,.62);
+    }
+
+    .pg-error {
+        font-size: 13px;
+        color: #dc3545;
+        font-weight: 700;
+    }
+
+    .pg-upload {
+        border: 1px dashed rgba(13,110,253,.35);
+        background: rgba(13,110,253,.04);
+        border-radius: 16px;
+        padding: 16px;
+        display: grid;
+        gap: 10px;
+    }
+
+    .pg-upload-title {
+        font-weight: 950;
+        color: var(--ink);
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .pg-upload input[type="file"] {
+        width: 100%;
+        border-radius: 14px;
+        padding: 10px;
+        border: 1px solid rgba(0,0,0,.14);
+        background: #fff;
+    }
+
+    .pg-actions {
+        margin-top: 16px;
+        display: grid;
+        gap: 10px;
+    }
+
+    .pg-btn {
+        width: 100%;
+        border-radius: 14px;
+        padding: 14px 16px;
+        font-weight: 950;
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: transform .06s ease, filter .15s ease, box-shadow .15s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+        .pg-btn:active {
+            transform: translateY(1px);
+        }
+
+    .pg-primary {
+        color: #082042;
+        background: var(--yellow);
+        border: 1px solid rgba(255,193,7,.35);
+        box-shadow: 0 12px 26px rgba(255,193,7,.20);
+    }
+
+    .pg-secondary {
+        color: var(--blue);
+        background: rgba(13,110,253,.06);
+        border: 1px solid rgba(13,110,253,.18);
+    }
+
+        .pg-secondary:hover {
+            box-shadow: 0 0 0 4px rgba(13,110,253,.10);
+        }
+</style>
+
+<div class="pg-wrap">
+    <div class="container">
+        <div class="pg-card">
+            <div class="pg-top">
+                <h1 class="pg-title">Подай заявка за събитие</h1>
+                <p class="pg-sub">
+                    Попълни информацията за събитието. След изпращане заявката ще бъде прегледана.
+                </p>
+            </div>
+
+            <div class="pg-body">
+                <!-- ✅ like your old view: explicit asp-action + antiforgery -->
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+
+                    <!-- ✅ keep model-level validation -->
+                    <div asp-validation-summary="ModelOnly" class="pg-validation text-danger"></div>
+
+                    <div class="pg-grid">
+                        <div class="pg-field">
+                            <label class="pg-label" asp-for="Title">Заглавие</label>
+                            <input class="pg-input" asp-for="Title" />
+                            <span asp-validation-for="Title" class="pg-error"></span>
+                        </div>
+
+                        <div class="pg-field">
+                            <label class="pg-label" asp-for="StartDateTime">Дата и час</label>
+                            <input class="pg-input" asp-for="StartDateTime" type="datetime-local" />
+                            <span asp-validation-for="StartDateTime" class="pg-error"></span>
+                            <div class="pg-hint">Избери точна дата и начален час.</div>
+                        </div>
+
+                        <div class="pg-field">
+                            <label class="pg-label" asp-for="Location">Място</label>
+                            <input class="pg-input" asp-for="Location" />
+                            <span asp-validation-for="Location" class="pg-error"></span>
+                        </div>
+
+                        <div class="pg-field">
+                            <label class="pg-label" asp-for="Phone">Телефон</label>
+                            <input class="pg-input" asp-for="Phone" placeholder="+359..." />
+                            <span asp-validation-for="Phone" class="pg-error"></span>
+                        </div>
+
+                        <div class="pg-field" style="grid-column: 1 / -1;">
+                            <label class="pg-label" asp-for="Description">Описание</label>
+                            <textarea class="pg-textarea" asp-for="Description" rows="6"></textarea>
+                            <span asp-validation-for="Description" class="pg-error"></span>
+                        </div>
+
+                        <div class="pg-upload" style="grid-column: 1 / -1;">
+                            <p class="pg-upload-title">Снимки / Видеа (по желание)</p>
+                            <div class="pg-hint">
+                                Ако още нямаш бекенд за файловете — остави тези inputs за UI, и после ще вържем upload логиката.
+                            </div>
+
+                            <input type="file" name="images" multiple accept="image/*" />
+                            <input type="file" name="videos" multiple accept="video/*" />
+                        </div>
+                    </div>
+
+                    <div class="pg-actions">
+                        <!-- ✅ same semantics as old "Submit" -->
+                        <button type="submit" class="pg-btn pg-primary">Изпрати</button>
+                        <a class="pg-btn pg-secondary" asp-action="My">Моите заявки</a>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-
-    <div>
-        <label asp-for="StartDateTime"></label><br />
-        <input asp-for="StartDateTime" type="datetime-local" />
-        <span asp-validation-for="StartDateTime" style="color:red"></span>
-    </div>
-
-    <div>
-        <label asp-for="Location"></label><br />
-        <input asp-for="Location" />
-        <span asp-validation-for="Location" style="color:red"></span>
-    </div>
-
-    <div>
-        <label asp-for="Description"></label><br />
-        <textarea asp-for="Description" rows="6"></textarea>
-        <span asp-validation-for="Description" style="color:red"></span>
-    </div>
-
-    <div>
-        <label asp-for="Phone"></label><br />
-        <input asp-for="Phone" />
-        <span asp-validation-for="Phone" style="color:red"></span>
-    </div>
-
-    <br />
-    <button type="submit">Submit</button>
-</form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

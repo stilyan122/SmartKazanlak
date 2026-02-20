@@ -1,47 +1,251 @@
 ﻿@using SmartKazanlak.Core.Models.EventRequest
 @model IReadOnlyList<EventRequestListDto>
 
-<h2>Pending Event Requests</h2>
-
-@if (!Model.Any())
-{
-    <p>No pending requests.</p>
+@{
+    ViewData["Title"] = "Чакащи заявки";
 }
-else
-{
-    <table border="1" cellpadding="6" cellspacing="0">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Date/Time</th>
-                <th>Location</th>
-                <th>Organizer</th>
-                <th>View</th>
-            </tr>
-        </thead>
-        <tbody>
+
+<style>
+    :root {
+        --blue: #0b5ed7;
+        --yellow: #fcd251;
+        --ink: #0b1b34;
+        --muted: rgba(11,27,52,.72);
+        --border: rgba(0,0,0,.10);
+        --shadow: 0 14px 34px rgba(0,0,0,.10);
+        --radius: 22px;
+        --warn: #ffb300;
+        --ok: #198754;
+        --bad: #dc3545;
+    }
+
+    .pg-wrap {
+        padding: 28px 0 36px;
+    }
+
+    .pg-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+    }
+
+    .pg-title {
+        margin: 0;
+        font-weight: 950;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        font-size: 28px;
+        line-height: 1.15;
+    }
+
+    .pg-sub {
+        margin: 6px 0 0 0;
+        color: var(--muted);
+        font-size: 14px;
+    }
+
+    .pg-tabs {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+
+    .pg-tab {
+        text-decoration: none;
+        font-weight: 950;
+        font-size: 13px;
+        padding: 10px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(0,0,0,.10);
+        background: rgba(0,0,0,.03);
+        color: rgba(11,27,52,.85);
+        transition: box-shadow .15s ease, transform .06s ease, filter .15s ease;
+    }
+
+        .pg-tab:hover {
+            box-shadow: 0 0 0 4px rgba(13,110,253,.10);
+        }
+
+        .pg-tab.active {
+            background: rgba(255,179,0,.14);
+            border-color: rgba(255,179,0,.35);
+            color: #7a4b00;
+            box-shadow: 0 10px 24px rgba(255,179,0,.10);
+        }
+
+    .pg-list {
+        display: grid;
+        gap: 12px;
+    }
+
+    .pg-card {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: #fff;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+    }
+
+    .pg-cardTop {
+        padding: 16px 16px 14px;
+        background: linear-gradient(135deg, rgba(255,179,0,.14), rgba(13,110,253,.05));
+        border-bottom: 1px solid rgba(0,0,0,.06);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .pg-name {
+        margin: 0;
+        font-weight: 950;
+        color: var(--ink);
+        letter-spacing: -0.02em;
+        font-size: 16px;
+        line-height: 1.25;
+    }
+
+    .pg-meta {
+        margin-top: 8px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        color: var(--muted);
+        font-size: 13px;
+    }
+
+    .pg-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(0,0,0,.10);
+        background: rgba(0,0,0,.03);
+        font-weight: 900;
+        font-size: 12px;
+        color: rgba(11,27,52,.78);
+        white-space: nowrap;
+    }
+
+    .pg-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-weight: 950;
+        font-size: 12px;
+        border: 1px solid rgba(255,179,0,.30);
+        background: rgba(255,179,0,.12);
+        color: rgba(153,102,0,1);
+        white-space: nowrap;
+    }
+
+    .pg-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .pg-btn {
+        border-radius: 14px;
+        padding: 10px 12px;
+        font-weight: 950;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: transform .06s ease, filter .15s ease, box-shadow .15s ease;
+    }
+
+        .pg-btn:active {
+            transform: translateY(1px);
+        }
+
+    .pg-details {
+        color: var(--blue);
+        background: rgba(13,110,253,.06);
+        border: 1px solid rgba(13,110,253,.18);
+    }
+
+        .pg-details:hover {
+            box-shadow: 0 0 0 4px rgba(13,110,253,.10);
+        }
+
+    .empty {
+        border: 1px dashed rgba(13,110,253,.30);
+        background: rgba(13,110,253,.04);
+        padding: 18px;
+        border-radius: 18px;
+        color: var(--muted);
+    }
+
+
+    .pg-title {
+        font-size: 24px;
+    }
+
+    }
+</style>
+
+<div class="container pg-wrap">
+    <div class="pg-head">
+        <div>
+            <h2 class="pg-title">Чакащи заявки</h2>
+            <p class="pg-sub">Заявки, които чакат преглед.</p>
+
+            <div class="pg-tabs">
+                <a class="pg-tab active" asp-area="Admin" asp-controller="EventRequests" asp-action="Pending">Чакащи</a>
+                <a class="pg-tab" asp-area="Admin" asp-controller="EventRequests" asp-action="Approved">Одобрени</a>
+                <a class="pg-tab" asp-area="Admin" asp-controller="EventRequests" asp-action="Rejected">Отхвърлени</a>
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty">Няма чакащи заявки.</div>
+    }
+    else
+    {
+        <div class="pg-list">
             @foreach (var x in Model)
             {
-                <tr>
-                    <td>@x.Title</td>
-                    <td>@x.StartDateTime</td>
-                    <td>@x.Location</td>
-                    <td>@x.OrganizerName</td>
-                    <td>
-                        <a asp-area="Admin"
-                           asp-controller="EventRequests"
-                           asp-action="Details"
-                           asp-route-id="@x.Id">
-                            Details
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+                <div class="pg-card">
+                    <div class="pg-cardTop">
+                        <div>
+                            <h3 class="pg-name">@x.Title</h3>
+                            <div class="pg-meta">
+                                <span class="pg-pill">📍 @x.Location</span>
+                                <span class="pg-pill">🕒 @x.StartDateTime.ToString("dd.MM.yyyy HH:mm")</span>
+                                <span class="pg-pill">👤 @x.OrganizerName</span>
+                                <span class="pg-status">⏳ @x.Status</span>
+                            </div>
+                        </div>
 
-<p style="margin-top:16px;">
-    <a asp-area="Admin" asp-controller="EventRequests" asp-action="Approved">Approved</a> |
-    <a asp-area="Admin" asp-controller="EventRequests" asp-action="Rejected">Rejected</a>
-</p>
+                        <div class="pg-actions">
+                            <a class="pg-btn pg-details"
+                               asp-area="Admin"
+                               asp-controller="EventRequests"
+                               asp-action="Details"
+                               asp-route-id="@x.Id">
+                                Детайли
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

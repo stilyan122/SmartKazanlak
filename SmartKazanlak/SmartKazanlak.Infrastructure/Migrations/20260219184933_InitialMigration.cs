@@ -52,31 +52,6 @@ namespace SmartKazanlak.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EventRequests",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
-                    StartDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
-                    OrganizerName = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
-                    OrganizerEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    AdminReviewedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    AdminReviewedByUserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AdminNote = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EventRequests", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -183,6 +158,37 @@ namespace SmartKazanlak.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "EventRequests",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
+                    StartDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
+                    OrganizerName = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false),
+                    OrganizerEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AdminReviewedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AdminReviewedByUserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AdminNote = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EventRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EventRequests_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MediaFiles",
                 columns: table => new
                 {
@@ -268,6 +274,11 @@ namespace SmartKazanlak.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EventRequests_UserId",
+                table: "EventRequests",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MediaFiles_EventRequestId",
                 table: "MediaFiles",
                 column: "EventRequestId");
@@ -306,10 +317,10 @@ namespace SmartKazanlak.Infrastructure.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "EventRequests");
 
             migrationBuilder.DropTable(
-                name: "EventRequests");
+                name: "AspNetUsers");
         }
     }
 }
