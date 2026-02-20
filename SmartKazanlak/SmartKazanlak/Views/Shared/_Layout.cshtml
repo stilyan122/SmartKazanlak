@@ -23,8 +23,31 @@
                             <a class="nav-link nav-btn" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link nav-btn" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link nav-btn" asp-area="Admin" asp-controller="EventRequest" asp-action="Privacy">Privacy</a>
                         </li>
+                        @if (User?.IsInRole("Admin") == true)
+                        {
+                            <li class="nav-item pg-nav-sep" aria-hidden="true"></li>
+
+                            <li class="nav-item">
+                                <a class="nav-link pg-nav-btn pg-nav-btn--admin"
+                                   asp-area="Admin" asp-controller="EventRequests" asp-action="Pending">
+                                    Чакащи
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link pg-nav-btn pg-nav-btn--admin
+                                   asp-area="Admin" asp-controller="EventRequests" asp-action="Approved">
+                                    Одобрени
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link pg-nav-btn pg-nav-btn--admin
+                                   asp-area="Admin" asp-controller="EventRequests" asp-action="Rejected">
+                                    Отхвърлени
+                                </a>
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

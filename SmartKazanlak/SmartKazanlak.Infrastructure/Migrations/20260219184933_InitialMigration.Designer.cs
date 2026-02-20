@@ -12,7 +12,7 @@ using SmartKazanlak.Infrastructure;
 namespace SmartKazanlak.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260219072035_InitialMigration")]
+    [Migration("20260219184933_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace SmartKazanlak.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.22")
+                .HasAnnotation("ProductVersion", "8.0.23")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -162,7 +162,7 @@ namespace SmartKazanlak.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("SmartKazanlak.Infrastructure.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("SmartKazanlak.Core.Domain.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -230,7 +230,7 @@ namespace SmartKazanlak.Infrastructure.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("SmartKazanlak.Infrastructure.Entities.EventRequest", b =>
+            modelBuilder.Entity("SmartKazanlak.Core.Domain.Entities.EventRequest", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -290,14 +290,16 @@ namespace SmartKazanlak.Infrastructure.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("EventRequests");
                 });
 
-            modelBuilder.Entity("SmartKazanlak.Infrastructure.Entities.MediaFile", b =>
+            modelBuilder.Entity("SmartKazanlak.Core.Domain.Entities.MediaFile", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -337,7 +339,7 @@ namespace SmartKazanlak.Infrastructure.Migrations
                     b.ToTable("MediaFiles");
                 });
 
-            modelBuilder.Entity("SmartKazanlak.Infrastructure.Entities.ModerationAction", b =>
+            modelBuilder.Entity("SmartKazanlak.Core.Domain.Entities.ModerationAction", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -380,7 +382,7 @@ namespace SmartKazanlak.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("SmartKazanlak.Infrastructure.Entities.ApplicationUser", null)
+                    b.HasOne("SmartKazanlak.Core.Domain.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -389,7 +391,7 @@ namespace SmartKazanlak.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("SmartKazanlak.Infrastructure.Entities.ApplicationUser", null)
+                    b.HasOne("SmartKazanlak.Core.Domain.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -404,7 +406,7 @@ namespace SmartKazanlak.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SmartKazanlak.Infrastructure.Entities.ApplicationUser", null)
+                    b.HasOne("SmartKazanlak.Core.Domain.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -413,16 +415,27 @@ namespace SmartKazanlak.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("SmartKazanlak.Infrastructure.Entities.ApplicationUser", null)
+                    b.HasOne("SmartKazanlak.Core.Domain.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SmartKazanlak.Infrastructure.Entities.MediaFile", b =>
+            modelBuilder.Entity("SmartKazanlak.Core.Domain.Entities.EventRequest", b =>
                 {
-                    b.HasOne("SmartKazanlak.Infrastructure.Entities.EventRequest", "EventRequest")
+                    b.HasOne("SmartKazanlak.Core.Domain.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SmartKazanlak.Core.Domain.Entities.MediaFile", b =>
+                {
+                    b.HasOne("SmartKazanlak.Core.Domain.Entities.EventRequest", "EventRequest")
                         .WithMany("MediaFiles")
                         .HasForeignKey("EventRequestId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -431,9 +444,9 @@ namespace SmartKazanlak.Infrastructure.Migrations
                     b.Navigation("EventRequest");
                 });
 
-            modelBuilder.Entity("SmartKazanlak.Infrastructure.Entities.ModerationAction", b =>
+            modelBuilder.Entity("SmartKazanlak.Core.Domain.Entities.ModerationAction", b =>
                 {
-                    b.HasOne("SmartKazanlak.Infrastructure.Entities.EventRequest", "EventRequest")
+                    b.HasOne("SmartKazanlak.Core.Domain.Entities.EventRequest", "EventRequest")
                         .WithMany("ModerationActions")
                         .HasForeignKey("EventRequestId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -442,7 +455,7 @@ namespace SmartKazanlak.Infrastructure.Migrations
                     b.Navigation("EventRequest");
                 });
 
-            modelBuilder.Entity("SmartKazanlak.Infrastructure.Entities.EventRequest", b =>
+            modelBuilder.Entity("SmartKazanlak.Core.Domain.Entities.EventRequest", b =>
                 {
                     b.Navigation("MediaFiles");
 
